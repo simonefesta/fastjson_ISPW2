@@ -54,7 +54,7 @@ public class ParserConfigTest extends TestCase {
     @Test
     public void test_1() throws Exception {
         Model model = JSON.parseObject(input, classType, conf);
-        Assert.assertEquals(this.expected, model.value);
+        Assert.assertEquals(expected, model.value);
     }
 
     /*public void test_1() throws Exception {
