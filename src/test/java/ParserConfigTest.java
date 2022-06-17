@@ -1,3 +1,4 @@
+import com.alibaba.fastjson.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +12,14 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 
-@RunWith(Parameterized.class) //la classe di test definisce il runner JUnit.
+/*
+ RIFERIMENTO: https://github.com/alibaba/fastjson/blob/1.2.79/src/test/java/com/alibaba/json/bvt/serializer/ParserConfigTest.java
+ JACOCO REPORT: goto com.alibaba.fastjson/JSON/ parseObject(String, Type, ParserConfig, ParseProcess, int, Feature[])
+ */
+
+
+
+@RunWith(Parameterized.class)
 public class ParserConfigTest extends TestCase {
 
     //tali parametri sono presi vedendo cosa richiede parseObject. I parametri sono attributi privati delle classi di test.
@@ -19,51 +27,68 @@ public class ParserConfigTest extends TestCase {
     private Type classType;
     private ParserConfig conf;
     private int expected; //output
+    public static final int error = -1; //usato come return per eventuali errori.
+
 
     //costruttore
-    public ParserConfigTest(String input, Type classType, ParserConfig conf, int expected) {
-        configure(input, classType, conf, expected); //nel costruttore uso configure.
+    public ParserConfigTest(String input, Type classType, ClassLoader ContextClassLoader, int expected) {
+        configure(input, classType,ContextClassLoader, expected); //nel costruttore uso configure.
     }
 
 
     //configure
-    private void configure(String input, Type classType, ParserConfig conf, int expected)
+    private void configure(String input, Type classType,ClassLoader ContextClassLoader, int expected)
     {
       this.input = input;
       this.classType = classType;
-      this.conf = conf;
+      this.conf = new ParserConfig(ContextClassLoader);
       this.expected = expected;
     }
 
 
-    /*normalmente sarebbe stato @Parameters con i valori stabiliti dal test.
-    vedere slide 12 (9 se conto il pie di pagina del prof), li usa parameters normale e da subito i valori.*/
-    @Parameterized.Parameters //il metodo di configurazione deve tornare una java.util.collection
+
+    @Parameterized.Parameters
     public static Collection<Object[]> getTestParameters() {
-        return Arrays.asList(new Object[][] { //poichè tipi diversi uso Object.Fossero stati tutti int, avrei usato new Integer.
-                {"{\"value\":123}", Model.class, new ParserConfig(Thread.currentThread().getContextClassLoader()), 123}
+        return Arrays.asList(new Object[][]{
+                //input                 //ClassType          //ContextClassLoader                            //expected
+                {"{\"value\":123}",     Model.class,     Thread.currentThread().getContextClassLoader(),        123},
+                {null,     null,     Thread.currentThread().getContextClassLoader(),        error} //aumenta branch coverage (from 31% -> 37%)
+
         });
-      /*        string input, classType e conf, expected (è 123 perchè il test originale usava 123).
-      questi valori sono presi dal test originale, non li ho inventati io. /*
-      Se avessi avuto altri test da proporre, li avrei potuti mettere subito dopo il primo test, in un'altra graffa come linea 44.
-       */
-        }
+    }
 
 
- //see ref:https://www.tutorialspoint.com/junit/junit_parameterized_test.htm
     @Test
-    public void test_1() throws Exception {
-        Model model = JSON.parseObject(input, classType, conf);
-        Assert.assertEquals(expected, model.value);
+    public void test_1() {
+
+        switch (expected)
+        {
+
+            case error:
+                try{
+                        Model model = JSON.parseObject(input, classType, conf);
+                        Assert.assertEquals(expected, model.value);
+                   }
+                  catch(Exception e) {
+                      Assert.assertTrue("Exception correctly captured", true);
+                  }
+                break;
+
+            default:
+                try{
+                    Model model = JSON.parseObject(input, classType, conf);
+                    Assert.assertEquals(expected, model.value);
+                }
+                catch(Exception e) {
+
+                    Assert.fail("Exception captured but not expected");
+                }
+                break;
+
+
+        }
     }
 
-    /*public void test_1() throws Exception {
-        ParserConfig config = new ParserConfig(Thread.currentThread().getContextClassLoader());
-
-        Model model = JSON.parseObject("{\"value\":123}", Model.class, config);
-        Assert.assertEquals(123, model.value);
-    }
-    rispetto a prima, metto i parametri, non valori "esatti" */
 
     public static class Model {
         public int value;

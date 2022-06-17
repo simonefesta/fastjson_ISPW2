@@ -1,4 +1,4 @@
-import junit.framework.TestCase;
+
 
 import org.junit.Assert;
 
@@ -6,89 +6,95 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
 
-@RunWith(Parameterized.class)
-public class ObjectArraySerializerTest extends TestCase {
+/*
+ORIGINAL TEST: https://github.com/alibaba/fastjson/blob/1.2.79/src/test/java/com/alibaba/json/bvt/serializer/ObjectArraySerializerTest.java
+RIFERIMENTO JACOCO: goto com.alibaba.fastjson.serializer/JSONSerializer/write(Object) (essa richiama write(SerializeWriter, object)
+ */
 
-    private SerializeWriter out;
-    private Object[] obj;
-    private String expected;
+@RunWith(Enclosed.class)
+public class ObjectArraySerializerTest {
 
+    @RunWith(Parameterized.class)
+    public static class ObjectArraySerializerTest012 {
 
-    //costruttore
-    public ObjectArraySerializerTest(SerializeWriter out, Object[] obj, String expected) {
-        configure(out, obj, expected); //nel costruttore uso configure.
-    }
+        private SerializeWriter out;
+        private Object[] obj;
+        private String expected;
 
-    //configure
-    private void configure(SerializeWriter out, Object[] obj, String expected) {
-        this.out = out;
-        this.obj = obj;
-        this.expected = expected;
-    }
+        public ObjectArraySerializerTest012(SerializeWriter out, Object[] obj, String expected)
+        {
+            configure(out, obj, expected);
+        }
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> getTestParameters() {
-        return Arrays.asList(new Object[][]{
-                // serializeWriter          Object[]                     Expected
-                {new SerializeWriter(1), new Object[]{"a12", "b34"}, "[\"a12\",\"b34\"]"},
-                {new SerializeWriter(1), new Object[]{}, "[]"},
-                {new SerializeWriter(1), new Object[]{null, null}, "[null,null]"},
-        });
-    }
+        public void configure(SerializeWriter out, Object[] obj, String expected)
+        {
+            this.out = out;
+            this.obj = obj;
+            this.expected = expected;
 
-    @Test
-    public void test() {
+        }
 
-        JSONSerializer.write(out, obj);
+        @Parameterized.Parameters
+        public static Collection<Object[]> getTestParameters()
+        {
+            return Arrays.asList(new Object[][]{
+                    // serializeWriter          Object[]                            Expected
+                    {new SerializeWriter(1),     new Object[]{"a12", "b34"},        "[\"a12\",\"b34\"]"},
+                    {new SerializeWriter(1),     new Object[]{},                     "[]"},
+                    {new SerializeWriter(1),     new Object[]{null, null},           "[null,null]"},
+                    {new SerializeWriter(1),     null,                               "null"}  //aggiunto perchè in  write(Object object) ho: if (object == null)
+            });
+        }
 
-        Assert.assertEquals(this.expected, out.toString());
+        @Test
+        public void test012() //test 0, 1, 2 parametrizzati.
+        {
+            JSONSerializer.write(out, obj);
+            Assert.assertEquals(this.expected, out.toString());
 
-    }
-
-
-    @Test
-    public void test1() {
-        if (Objects.equals(obj, new Object[]{null, null})) {
-            Assert.assertEquals(expected, JSON.toJSONString(obj, false));
         }
     }
 
+    @RunWith(Parameterized.class)
+    public static class ObjectArraySerializerTest3
+    {
+
+        private boolean param;
+        private Object[] obj;
+        private String expected;
+
+
+        //costruttore
+        public ObjectArraySerializerTest3(boolean param, Object[] obj, String expected) {
+            configure(param, obj, expected); //nel costruttore uso configure.
+        }
+
+        //configure
+        public void configure(boolean param, Object[] obj, String expected) {
+            this.param = param;
+            this.obj = obj;
+            this.expected = expected;
+        }
+
+        @Parameterized.Parameters
+        public static Collection<Object[]> getTestParameters() {
+            return Arrays.asList(new Object[][]{
+                    // param                   Object[]                     Expected
+                    { false             , new Object[]{null, null},     "[null,null]"}
+                    });}
+
+        @Test
+        public void test3()
+            {
+                Assert.assertEquals(expected, JSON.toJSONString(obj, param));
+            }
+    }
+
 }
-/*
-    public void test_0() throws Exception {
-        SerializeWriter out = new SerializeWriter(1);
-
-        JSONSerializer.write(out, new Object[] { "a12", "b34" });
-
-        Assert.assertEquals("[\"a12\",\"b34\"]", out.toString());
-    }
-
-    public void test_1() throws Exception {
-        SerializeWriter out = new SerializeWriter(1);
-
-        JSONSerializer.write(out, new Object[] {});
-
-        Assert.assertEquals("[]", out.toString());
-    }
-
-    public void test_2() throws Exception {
-        SerializeWriter out = new SerializeWriter(1);
-
-        JSONSerializer.write(out, new Object[] { null, null });
-
-        Assert.assertEquals("[null,null]", out.toString());
-    }
-
-    public void test_3() throws Exception {
-        Assert.assertEquals("[null,null]", JSON.toJSONString(new Object[] { null, null }, false));
-    }
-
-
- */
