@@ -164,11 +164,11 @@
                                     <executable>java</executable>
                                     <arguments>
                                         <argument>-jar</argument>
-                                        <argument>.\jar\jacoco\jacococli.jar</argument>
+                                        <argument>.src\test\lib\jacococli.jar</argument>
                                         <argument>report</argument>
                                         <argument>.\target\jacoco.exec</argument>
                                         <argument>--classfiles</argument>
-                                        <argument>.\jar\fastjson-1.2.79.jar</argument>
+                                        <argument>.src\test\lib\fastjson-1.2.79.jar</argument>
                                         <argument>--sourcefiles</argument>
                                         <argument>.\src\test\java</argument>
                                         <argument>--html</argument>
