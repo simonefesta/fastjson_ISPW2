@@ -171,12 +171,8 @@
                                         <argument>.\src\test\lib\fastjson-1.2.79.jar</argument>
                                         <argument>--sourcefiles</argument>
                                         <argument>.\src\test\java</argument>
-                                        <argument>--html</argument>
-                                        <argument>target</argument>
-                                        <argument>--xml</argument>
-                                        <argument>target\jacoco.xml</argument>
-                                        <argument>--csv</argument>
-                                        <argument>target\jacoco.csv</argument>
+                                        <!-- le altre impostazioni sono di 'default' -->
+
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -218,12 +214,8 @@
                                         <argument>./src/test/lib/fastjson-1.2.79.jar</argument>
                                         <argument>--sourcefiles</argument>
                                         <argument>./src/test/java</argument>
-                                        <argument>--html</argument>
-                                        <argument>target</argument>
-                                        <argument>--xml</argument>
-                                        <argument>target/jacoco.xml</argument>
-                                        <argument>--csv</argument>
-                                        <argument>target/jacoco.csv</argument>
+                                        <!-- le altre impostazioni sono di 'default' -->
+
                                     </arguments>
                                 </configuration>
                             </execution>
