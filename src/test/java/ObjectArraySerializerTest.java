@@ -28,14 +28,14 @@ public class ObjectArraySerializerTest {
         private Object[] obj;
         private String expected;
 
-        public ObjectArraySerializerTest012(SerializeWriter out, Object[] obj, String expected)
+        public ObjectArraySerializerTest012(int initialSize, Object[] obj, String expected)
         {
-            configure(out, obj, expected);
+            configure(initialSize, obj, expected);
         }
 
-        public void configure(SerializeWriter out, Object[] obj, String expected)
+        public void configure(int initialSize, Object[] obj, String expected)
         {
-            this.out = out;
+            this.out = new SerializeWriter(initialSize);
             this.obj = obj;
             this.expected = expected;
 
@@ -46,10 +46,10 @@ public class ObjectArraySerializerTest {
         {
             return Arrays.asList(new Object[][]{
                     // serializeWriter          Object[]                            Expected
-                    {new SerializeWriter(1),     new Object[]{"a12", "b34"},        "[\"a12\",\"b34\"]"},
-                    {new SerializeWriter(1),     new Object[]{},                     "[]"},
-                    {new SerializeWriter(1),     new Object[]{null, null},           "[null,null]"},
-                    {new SerializeWriter(1),     null,                               "null"}  //aggiunto perchè in  write(Object object) ho: if (object == null)
+                    {1,     new Object[]{"a12", "b34"},        "[\"a12\",\"b34\"]"},
+                    {1,     new Object[]{},                     "[]"},
+                    {1,     new Object[]{null, null},           "[null,null]"},
+                    {1,     null,                               "null"}  //aggiunto perchè in  write(Object object) ho: if (object == null)
             });
         }
 
@@ -87,7 +87,12 @@ public class ObjectArraySerializerTest {
         public static Collection<Object[]> getTestParameters() {
             return Arrays.asList(new Object[][]{
                     // param                   Object[]                     Expected
-                    { false             , new Object[]{null, null},     "[null,null]"}
+                    { false             , new Object[]{null, null},     "[null,null]"},
+                    {true,     new Object[]{"a12", "b34"},        "[\n" +
+                            "\t\"a12\",\n" +
+                            "\t\"b34\"\n" +
+                            "]"},
+
                     });}
 
         @Test
