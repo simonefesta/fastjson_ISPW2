@@ -1,4 +1,4 @@
-import com.alibaba.fastjson.JSONException;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,9 +20,8 @@ import java.util.Collection;
 
 
 @RunWith(Parameterized.class)
-public class ParserConfigTest extends TestCase {
+public class ParserConfigTest {
 
-    //tali parametri sono presi vedendo cosa richiede parseObject. I parametri sono attributi privati delle classi di test.
     private String input;
     private Type classType;
     private ParserConfig conf;
